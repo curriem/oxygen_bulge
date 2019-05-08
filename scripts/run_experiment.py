@@ -98,7 +98,7 @@ experiment_name = experiment_name + '_%s' % args.run_type
 PT_DIR = '../data/pt_fls/'
 SMART_OUTPUTS = '../data/smart_outputs/'
 
-NCPU = 1
+NCPU = multiprocessing..cpu_count() - 2
 
 # experiment_name = 'o2%s%i_trop%i_water%i_o4cia%i_%s' % (args.o2_loc,
 #                                                         int(100*args.o2_abundance),
@@ -146,7 +146,7 @@ for band in bands_to_run:
     #print "run_smart({PT_DIR} + pt_fl, band, place=OUTPUT_DIR, R=args.resolution, o2o2=args.o2o2, transit=args.transit)"
     project_tools.run_trappist(PT_DIR + pt_fl, band=band, wlrange=wlrange,
                             place=SMART_OUTPUTS + '/trappist/' + experiment_name + '_output', R=args.resolution,
-              o2o2=o2o2, addn2=False)
+              o2o2=o2o2, NCPU=NCPU, addn2=False)
     project_tools.run_sun(PT_DIR + pt_fl, band=band, wlrange=wlrange,
                             place=SMART_OUTPUTS + '/sun/' + experiment_name + '_output', R=args.resolution,
-              o2o2=o2o2, addn2=False)
+              o2o2=o2o2, NCPU=NCPU, addn2=False)
