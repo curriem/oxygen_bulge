@@ -98,7 +98,7 @@ experiment_name = experiment_name + '_%s' % args.run_type
 PT_DIR = '../data/pt_fls/'
 SMART_OUTPUTS = '../data/smart_outputs/'
 
-NCPU = multiprocessing..cpu_count() - 2
+NCPU = multiprocessing.cpu_count() - 2
 
 # experiment_name = 'o2%s%i_trop%i_water%i_o4cia%i_%s' % (args.o2_loc,
 #                                                         int(100*args.o2_abundance),
