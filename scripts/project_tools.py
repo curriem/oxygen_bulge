@@ -37,7 +37,7 @@ def run_trappist(ptfile, band, wlrange, place='output', R=100000., rm_when_done=
         sim.smartin.source = 3 # solar and thermal sources
         sim.smartin.out_format = 1 # no transit calculations
 
-        sim.smartin.spec = '/Users/mcurr/RESEARCH/photochem_smart/fixed_input/specs/TRAPPIST-1.dat'
+        sim.smartin.spec = '../../specs/TRAPPIST-1.dat'
         sim.smartin.spec_skip = 5
         sim.smartin.spec_unit = 2 # Set unit to W/m^2/um
 
