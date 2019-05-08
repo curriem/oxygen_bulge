@@ -128,9 +128,9 @@ OUTPUT_DIR = SMART_OUTPUTS + experiment_name + '_output'
 # check if pt file exists for this experiment
 pt_fl = experiment_name + '.pt'
 #pt_fl = 'o2%s%i_water%i.pt' % (args.o2_loc, int(100*args.o2_abundance), int(args.h2o))
-# if os.path.isfile(PT_DIR + pt_fl):
+if not os.path.isfile(PT_DIR + pt_fl):
     # make pt file if it does not exist already
-pt_fl = project_tools.make_pt_fl(args.o2inv, args.o2_loc, trop_loc, h2o,
+    pt_fl = project_tools.make_pt_fl(args.o2inv, args.o2_loc, trop_loc, h2o,
                                 args.pt_shape, experiment_name,
                                 N2_scalar=args.n2_scalar)
 

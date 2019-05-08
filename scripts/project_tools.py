@@ -1,4 +1,5 @@
 import os
+import stat
 import smart
 import numpy as np
 from scipy.interpolate import interp1d
@@ -282,3 +283,95 @@ def plot_pt(pt_fl):
     plt.xlabel(r'O$_2$ mixing ratio')
     plt.ylabel('Pressure [bar]')
     plt.show()
+
+
+def write_slurm_script_python(runfiles, name="smart_run", subname="smart_submit.csh",
+                       workdir = "",
+                       nodes = 1, mem = "500G", walltime = "0", ntasks = 28,
+                       account = "vsm", submit = False, rm_after_submit = False,
+                       preamble = ['module load icc_18',
+                                   'module load parallel-20170722']):
+    """
+    Write a hyak SLURM bash script for simple python scripts
+
+    Parameters
+    ----------
+    runfiles : array of strs
+        Array of all python scripts to run
+    name : str
+        Name of the job
+    subname : str
+        Name of the bash submission script to generate
+    workdir : str
+        Working directory
+    nodes : int
+        Number of nodes
+    mem : str
+        Requested memory
+    walltime : str
+        Walltime to allow simulation to run for ("0" is indefinite)
+    ntasks : int
+        Number of processors to allow usage of
+    account : str
+        Name of account and partition on hyak
+    submit : bool
+        Set to submit the job
+    rm_after_submit : bool
+        Set to remove script immediately after submission
+    preamble : list
+        Bash statements to call before running python script
+        (e.g. ['module load icc_18', 'source activate my_root'])
+    """
+
+    # Get absolute path of workdir
+    abs_place = os.path.abspath(workdir)
+
+    newfile = os.path.join(abs_place, subname)
+
+    f = open(newfile, 'w')
+
+    f.write('#!/bin/bash\n')
+    f.write('\n')
+    f.write('#SBATCH --job-name=%s\n' %name)
+    f.write('\n')
+    f.write('#SBATCH --account=%s\n' %account)
+    f.write('#SBATCH --partition=%s\n' %account)
+    f.write('\n')
+    f.write('#SBATCH --nodes=%i\n' %nodes)
+    ###SBATCH --ntasks-per-node=28 ### not necessarily required, so I'm not using it in this one
+    f.write('#SBATCH --time=%s\n' %walltime)  ### this basically allows it to run for 365 days. Note it seems to otherwise only accept hours:mins:sec
+    f.write('#SBATCH --mem=%s\n' %mem) ### apparently you only get the memory you ask for
+    f.write('\n')
+    f.write('#SBATCH --ntasks=%i\n' %ntasks)
+    f.write('#SBATCH --exclusive\n')
+    f.write('\n')
+    f.write('#SBATCH --workdir=%s\n' %abs_place)
+    f.write('\n')
+    f.write('ulimit -s unlimited\n')
+
+    # Loop over preamble statements
+    for i in range(len(preamble)):
+        f.write('%s\n' %preamble[i])
+
+    f.write('\n')
+
+    for runfile in runfiles:
+        f.write('python %s\n' %runfile)
+
+    f.close()
+
+    # Set permissions to allow execute
+    st = os.stat(newfile)
+    os.chmod(newfile, st.st_mode | stat.S_IEXEC)
+
+    # Submit the run to the queue?
+    if submit:
+
+        subprocess.check_call(["sbatch", "-p", "vsm", "-A", "vsm", newfile])
+
+        # Delete the bash script after submitting
+        if rm_after_submit:
+
+            os.system('rm %s' %newfile)
+
+    return
