@@ -58,10 +58,15 @@ parser.add_argument('-n2scale', dest='n2_scalar', default=1., type=float, help='
 parser.add_argument('-R', dest='resolution', default=100000, type=int, help='Resolution of spectra')
 parser.add_argument('-pt_shape', dest='pt_shape', default='wedge', type=str)
 parser.add_argument('-run_type', dest='run_type', type=str)
+parser.add_argument('-pt_only', dest='pt_only', action='store_false')
 
 args = parser.parse_args()
 
-# default things:
+
+if not args.pt_only:
+    pt_only = True
+else:
+    pt_only = False
 
 experiment_name = args.o2_loc
 
@@ -98,7 +103,7 @@ experiment_name = experiment_name + '_%s' % args.run_type
 PT_DIR = '../data/pt_fls/'
 SMART_OUTPUTS = '../data/smart_outputs/'
 
-NCPU = multiprocessing..cpu_count() - 2
+NCPU = multiprocessing.cpu_count() - 2
 
 # experiment_name = 'o2%s%i_trop%i_water%i_o4cia%i_%s' % (args.o2_loc,
 #                                                         int(100*args.o2_abundance),
@@ -124,29 +129,31 @@ print '\n'
 
 OUTPUT_DIR = SMART_OUTPUTS + experiment_name + '_output'
 
-
-# check if pt file exists for this experiment
-pt_fl = experiment_name + '.pt'
-#pt_fl = 'o2%s%i_water%i.pt' % (args.o2_loc, int(100*args.o2_abundance), int(args.h2o))
-if not os.path.isfile(PT_DIR + pt_fl):
-    # make pt file if it does not exist already
+if pt_only:
     pt_fl = project_tools.make_pt_fl(args.o2inv, args.o2_loc, trop_loc, h2o,
                                 args.pt_shape, experiment_name,
                                 N2_scalar=args.n2_scalar)
 
 
-if args.run_type == 'bands':
-    bands_to_run = [0.63, 0.68, 0.76, 1.27]
-    wlrange = 0.04
-elif args.run_type == 'full':
-    bands_to_run = [0.95]
-    wlrange = 0.55
+else:
+    pt_fl = experiment_name + '.pt'
 
-for band in bands_to_run:
-    #print "run_smart({PT_DIR} + pt_fl, band, place=OUTPUT_DIR, R=args.resolution, o2o2=args.o2o2, transit=args.transit)"
-    project_tools.run_trappist(PT_DIR + pt_fl, band=band, wlrange=wlrange,
-                            place=SMART_OUTPUTS + '/trappist/' + experiment_name + '_output', R=args.resolution,
-              o2o2=o2o2, NCPU=NCPU, addn2=False)
-    project_tools.run_sun(PT_DIR + pt_fl, band=band, wlrange=wlrange,
-                            place=SMART_OUTPUTS + '/sun/' + experiment_name + '_output', R=args.resolution,
-              o2o2=o2o2, NCPU=NCPU, addn2=False)
+
+    if args.run_type == 'bands':
+        bands_to_run = [0.63, 0.68, 0.76, 1.27]
+        wlrange = 0.04
+    elif args.run_type == 'full':
+        bands_to_run = [0.95]
+        wlrange = 0.55
+    elif args.run_type == 'single':
+        bands_to_run = [0.76]
+        wlrange = 0.04
+
+    for band in bands_to_run:
+        #print "run_smart({PT_DIR} + pt_fl, band, place=OUTPUT_DIR, R=args.resolution, o2o2=args.o2o2, transit=args.transit)"
+        project_tools.run_trappist(PT_DIR + pt_fl, band=band, wlrange=wlrange,
+                                place=SMART_OUTPUTS + '/trappist/' + experiment_name + '_output', R=args.resolution,
+                  o2o2=o2o2, NCPU=NCPU, addn2=False)
+        project_tools.run_sun(PT_DIR + pt_fl, band=band, wlrange=wlrange,
+                                place=SMART_OUTPUTS + '/sun/' + experiment_name + '_output', R=args.resolution,
+                  o2o2=o2o2, NCPU=NCPU, addn2=False)
