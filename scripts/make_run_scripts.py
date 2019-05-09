@@ -4,7 +4,7 @@ import numpy as np
 o2_bulge_options = ['mixed']
 
 
-o2inv_options = np.arange(0.1, 0.22, 0.01)
+o2inv_options = np.arange(0.01, 0.22, 0.01)
 pt_shape_options = ['step']
 n2_options = ['1.']
 run_type_options = ['single']
@@ -24,7 +24,7 @@ for o2_bulge in o2_bulge_options:
                     runfiles.append(runfile)
 
 project_tools.write_slurm_script_python(runfiles,
-                                        name='o2bulge',
+                                        name='o2bulge_degeneracy',
                                         subname='o2bulge.sh',
                                         workdir='./',
 					walltime='48:00:00')
