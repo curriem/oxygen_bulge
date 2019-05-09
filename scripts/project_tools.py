@@ -2,7 +2,10 @@ import os
 import stat
 import smart
 import numpy as np
-from scipy.interpolate import interp1d
+try:
+    from scipy.interpolate import interp1d
+except:
+    pass
 
 
 PT_DIR = '../data/pt_fls/'

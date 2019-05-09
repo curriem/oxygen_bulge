@@ -4,7 +4,6 @@ import numpy as np
 import argparse
 import multiprocessing
 import matplotlib.pyplot as plt
-from scipy.interpolate import interp1d
 import project_tools
 
 
