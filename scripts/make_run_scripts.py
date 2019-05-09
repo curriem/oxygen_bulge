@@ -16,7 +16,7 @@ for o2_bulge in o2_bulge_options:
         for o2inv in o2inv_options:
             for pt_shape in pt_shape_options:
                 for n2 in n2_options:
-                    runfile = 'run_experiment.py -o2_loc %s -o2inv %s -n2scale %s -pt_shape %s -run_type %s -pt_only' % (o2_bulge,
+                    runfile = 'run_experiment.py -o2_loc %s -o2inv %s -n2scale %s -pt_shape %s -run_type %s' % (o2_bulge,
                                                                                                                        str(o2inv),
                                                                                                                        n2,
                                                                                                                        pt_shape,
