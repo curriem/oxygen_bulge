@@ -18,6 +18,7 @@ import numpy as np
 parser = argparse.ArgumentParser()
 parser.add_argument('-experiment_name', dest='experiment', type=str)
 parser.add_argument('-spec_type', dest='spec_type', type=str)
+parser.add_argument('-system', dest='system', type=str)
 # parser.add_argument('-o2_loc', dest='o2_loc', type=str, help='upper, lower, mixed')
 # parser.add_argument('-trop_loc', dest='trop_loc', default=None, type=float, help='pressure [bar] which separates upper and lower atmosphere regimes')
 # #parser.add_argument('-o4cia_on', dest='o2o2', action='store_true', help='turn on o4 cia')
@@ -35,7 +36,7 @@ lowres_R = 150
 highres_R = 100000
 
 PT_DIR = '../data/pt_fls/'
-SMART_OUTPUTS = '../data/smart_outputs/'
+SMART_OUTPUTS = '../data/smart_outputs/%s/' % args.system
 
 
 
@@ -92,7 +93,7 @@ def rad_file(experiment_name, band, wlspan=0.04):
     wnmax = 1e4 / wlmin
     wnmin = 1e4 / wlmax
 
-    return '../data/smart_outputs/%s_output/case_hitran2012_%i_%icm_toa.rad' % (experiment_name, int(wnmin), int(wnmax))
+    return '../data/smart_outputs/%s/%s_output/case_%i_%icm_toa.rad' % (args.system, experiment_name, int(wnmin), int(wnmax))
 
 
 def trnst_file(experiment_name, band, wlspan):
@@ -103,7 +104,7 @@ def trnst_file(experiment_name, band, wlspan):
     wnmax = 1e4 / wlmin
     wnmin = 1e4 / wlmax
 
-    return '../data/smart_outputs/%s_output/case_hitran2012_%i_%icm.trnst' % (experiment_name, int(wnmin), int(wnmax))
+    return '../data/smart_outputs/%s/%s_output/case_%i_%icm.trnst' % (args.system, experiment_name, int(wnmin), int(wnmax))
 
 def degrade_spectrum(flux, lam, band, R, span=0.04):
     lam_min = band - span
@@ -243,7 +244,7 @@ def plot_fullspectrum(experiment_name, highres_wl, highres_flux,
 
 
 
-    plt.savefig('../plots/%s_%s_full.pdf' % (experiment_name, spec))
+    plt.savefig('../plots/%s/%s_%s_full.pdf' % (args.system, experiment_name, spec))
 
 def extract_and_plot_full(experiment_name):
     if args.spec_type == 'transit':
@@ -381,7 +382,7 @@ if run_type == 'bands':
 
     fig.tight_layout()
 
-    plt.savefig('../plots/%s_%s_report.pdf' % (experiment, spec), bbox_inches='tight')
+    plt.savefig('../plots/%s/%s_%s_report.pdf' % (args.system, experiment, spec), bbox_inches='tight')
 
 
 elif run_type == 'full':
