@@ -4,7 +4,7 @@ import numpy as np
 o2_bulge_options = ['mixed']
 
 
-o2inv_options = np.arange(0.1, 0.22, 0.01)
+o2inv_options = np.arange(0.001, 0.02, 0.0005)
 pt_shape_options = ['step']
 n2_options = ['1.']
 run_type_options = ['single']
