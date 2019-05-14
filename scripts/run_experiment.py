@@ -87,7 +87,7 @@ else:
     trop_loc = args.trop_loc
     experiment_name = experiment_name + '_trop%i'%int(trop_loc*10)
 
-experiment_name = experiment_name + '_o2inv%s' % str(int(100*args.o2inv)).zfill(2)
+experiment_name = experiment_name + '_o2inv%s' % str(int(10000*args.o2inv)).zfill(4)
 
 if args.n2_scalar == 1.:
     experiment_name = experiment_name + '_n2scale1'
