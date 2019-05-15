@@ -25,6 +25,6 @@ for o2_bulge in o2_bulge_options:
 
 project_tools.write_slurm_script_python(runfiles,
                                         name='o2bulge_degeneracy',
-                                        subname='o2bulge.sh',
+                                        subname='degeneracy.sh',
                                         workdir='./',
 					walltime='48:00:00')
