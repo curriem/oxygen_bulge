@@ -10,6 +10,7 @@ except:
 
 PT_DIR = '../data/pt_fls/'
 
+
 def run_trappist(ptfile, band, wlrange, place='output', R=100000., rm_when_done=False,
               o2o2=True, transit=True, NCPU=1, addn2=True):
 
@@ -246,6 +247,62 @@ def make_pt_fl(max_o2_abundance, o2_location, trop_loc, h2o, pt_shape, experimen
 
     if not h2o:
         new_pt_inv[2, :] /= 1000
+
+
+    sum_mixing_ratios = np.sum(new_pt_inv[2:, :], axis=0)
+
+    sum_pressures = earth_pressure * sum_mixing_ratios
+
+
+    N2_earth_mixing_ratio = np.ones_like(sum_mixing_ratios) - sum_mixing_ratios
+
+    N2_earth_pressure = N2_earth_mixing_ratio * earth_pressure
+
+    N2_new_pressure = N2_scalar * N2_earth_pressure
+
+    sum_new_pressures = sum_pressures + N2_new_pressure
+
+    N2_new_mixing_ratio = N2_new_pressure / sum_new_pressures
+
+    #print N2_pressure
+
+    new_pt_inv = np.vstack((new_pt_inv, N2_new_mixing_ratio))
+
+    new_pt_inv[0, :] = sum_new_pressures
+
+    new_pt_data = new_pt_inv.T
+    np.savetxt(PT_DIR+new_pt_fl_name, new_pt_data, delimiter='   ', header=header, comments='')
+
+    return new_pt_fl_name
+
+
+
+def make_mixed_pt_fl(o2inv, N2_scalar=1):
+    earth_standard_ptfile = PT_DIR + '/earth_standard_icrccm_vmix.pt'
+    header = ["Press",
+              "Temp",
+              "H2O",
+              "CO2",
+              "O3",
+              "N2O",
+              "CO",
+              "CH4",
+              "O2",
+              "N2"]
+
+    header = "        ".join(header)
+    earth_pt_data = np.genfromtxt(earth_standard_ptfile, skip_header=1)
+    earth_pt_data_inv = earth_pt_data.T
+    earth_pressure = earth_pt_data_inv[0, :]
+    earth_o2_mixing_ratio = earth_pt_data_inv[8, :]
+
+    #new_pt_fl_name = 'o2%s%s_water%i.pt' % (o2_location, str(int(max_o2_abundance*100)).zfill(2), int(h2o))
+    new_pt_fl_name = 'degeneracy.pt'
+
+    new_o2_mix = o2inv * np.ones_like(earth_pressure)
+
+    new_pt_inv = np.copy(earth_pt_data_inv)
+    new_pt_inv[8, :] = new_o2_mix
 
 
     sum_mixing_ratios = np.sum(new_pt_inv[2:, :], axis=0)
