@@ -45,114 +45,36 @@ how to run this script:
 '''
 
 parser = argparse.ArgumentParser()
-#parser.add_argument('-exp', dest='experiment_name', default=None, type=str, help='Name of experiment')
-parser.add_argument('-o2_loc', dest='o2_loc', type=str, help='upper, lower, mixed')
-parser.add_argument('-trop_loc', dest='trop_loc', default=None, type=float, help='pressure [bar] which separates upper and lower atmosphere regimes')
-#parser.add_argument('-o4cia_on', dest='o2o2', action='store_true', help='turn on o4 cia')
-parser.add_argument('-o4cia_off', dest='o2o2', action='store_false', help='turn off o4 cia')
-#parser.add_argument('-h2o_on', dest='h2o', action='store_true', help='turn on water')
-parser.add_argument('-h2o_off', dest='h2o', action='store_false', help='turn off water')
-parser.add_argument('-o2inv', dest='o2inv', default=0.21, type=float, help='o2 abundance in upper, lower, and mixed cases')
-parser.add_argument('-n2scale', dest='n2_scalar', default=1., type=float, help='times PAL N2')
+parser.add_argument('-planet', dest='planet', type=str)
+parser.add_argument('-star', dest='star', type=str)
+parser.add_argument('-pt_fl', dest='pt_fl', type=str)
+parser.add_argument('-wlmin', dest='wlmin', type=float)
+parser.add_argument('-wlmax', dest='wlmax', type=float)
 parser.add_argument('-R', dest='resolution', default=100000, type=int, help='Resolution of spectra')
-parser.add_argument('-pt_shape', dest='pt_shape', default='wedge', type=str)
-parser.add_argument('-run_type', dest='run_type', type=str)
-parser.add_argument('-pt_only', dest='pt_only', action='store_false')
+
+
+#parser.add_argument('-exp', dest='experiment_name', default=None, type=str, help='Name of experiment')
+# parser.add_argument('-o2_loc', dest='o2_loc', type=str, help='upper, lower, mixed')
+# parser.add_argument('-trop_loc', dest='trop_loc', default=None, type=float, help='pressure [bar] which separates upper and lower atmosphere regimes')
+# #parser.add_argument('-o4cia_on', dest='o2o2', action='store_true', help='turn on o4 cia')
+# parser.add_argument('-o4cia_off', dest='o2o2', action='store_false', help='turn off o4 cia')
+# #parser.add_argument('-h2o_on', dest='h2o', action='store_true', help='turn on water')
+# parser.add_argument('-h2o_off', dest='h2o', action='store_false', help='turn off water')
+# parser.add_argument('-o2inv', dest='o2inv', default=0.21, type=float, help='o2 abundance in upper, lower, and mixed cases')
+# parser.add_argument('-n2scale', dest='n2_scalar', default=1., type=float, help='times PAL N2')
+# parser.add_argument('-R', dest='resolution', default=100000, type=int, help='Resolution of spectra')
+# parser.add_argument('-pt_shape', dest='pt_shape', default='wedge', type=str)
+# parser.add_argument('-run_type', dest='run_type', type=str)
+# parser.add_argument('-pt_only', dest='pt_only', action='store_false')
 
 args = parser.parse_args()
 
 
-if not args.pt_only:
-    pt_only = True
-else:
-    pt_only = False
-
-experiment_name = args.o2_loc
-
-if not args.h2o:
-    h2o = False
-    experiment_name += '_H2Ooff'
-else:
-    h2o = True
-
-if not args.o2o2:
-    o2o2 = False
-    experiment_name += '_O4off'
-else:
-    o2o2 = True
-
-if args.trop_loc == None:
-    trop_loc = 0.1
-else:
-    trop_loc = args.trop_loc
-    experiment_name = experiment_name + '_trop%i'%int(trop_loc*10)
-
-experiment_name = experiment_name + '_o2inv%s' % str(int(10000*args.o2inv)).zfill(4)
-
-if args.n2_scalar == 1.:
-    experiment_name = experiment_name + '_n2scale1'
-else:
-    experiment_name = experiment_name + '_n2scale%s' % str(args.n2_scalar).split('.')[-1]
-
-experiment_name = experiment_name + '_%s' % args.pt_shape
-
-experiment_name = experiment_name + '_%s' % args.run_type
 
 
 PT_DIR = '../data/pt_fls/'
 SMART_OUTPUTS = '../data/smart_outputs/'
 
-NCPU = multiprocessing.cpu_count() - 2
 
-# experiment_name = 'o2%s%i_trop%i_water%i_o4cia%i_%s' % (args.o2_loc,
-#                                                         int(100*args.o2_abundance),
-#                                                         int(args.trop_loc*10),
-#                                                         int(args.h2o),
-#                                                         int(args.o2o2),
-#                                                         args.pt_shape)
-# else:
-#     experiment_name = args.experiment_name
-
-print '\n'
-print 'Experiment name:', experiment_name
-# print 'Location of O2 bulge:', args.o2_loc
-# print 'Location of tropopause:', args.trop_loc
-# print 'O2 O2 CIA on?', args.o2o2
-# print 'Water on?', args.h2o
-# print 'Transit spectroscopy?', args.transit
-# print 'Maximum O2 abundance:', args.o2_abundance
-# print 'Resolution:', args.resolution
-# print 'PT shape:', args.pt_shape
-print '\n'
-
-
-OUTPUT_DIR = SMART_OUTPUTS + experiment_name + '_output'
-
-if pt_only:
-    pt_fl = project_tools.make_pt_fl(args.o2inv, args.o2_loc, trop_loc, h2o,
-                                args.pt_shape, experiment_name,
-                                N2_scalar=args.n2_scalar)
-
-
-else:
-    pt_fl = experiment_name + '.pt'
-
-
-    if args.run_type == 'bands':
-        bands_to_run = [0.63, 0.68, 0.76, 1.27]
-        wlrange = 0.04
-    elif args.run_type == 'full':
-        bands_to_run = [0.95]
-        wlrange = 0.55
-    elif args.run_type == 'single':
-        bands_to_run = [0.76]
-        wlrange = 0.04
-
-    for band in bands_to_run:
-        #print "run_smart({PT_DIR} + pt_fl, band, place=OUTPUT_DIR, R=args.resolution, o2o2=args.o2o2, transit=args.transit)"
-        project_tools.run_trappist(PT_DIR + pt_fl, band=band, wlrange=wlrange,
-                                place=SMART_OUTPUTS + '/trappist/' + experiment_name + '_output', R=args.resolution,
-                  o2o2=o2o2, NCPU=NCPU, addn2=False)
-        project_tools.run_sun(PT_DIR + pt_fl, band=band, wlrange=wlrange,
-                                place=SMART_OUTPUTS + '/sun/' + experiment_name + '_output', R=args.resolution,
-                  o2o2=o2o2, NCPU=NCPU, addn2=False)
+project_tools.run_smart(args.star, args.planet, args.pt_fl,
+                        wlmin=args.wlmin, wlmax=args.wlmax, NCPU=1)
