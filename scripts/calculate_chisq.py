@@ -24,7 +24,14 @@ elif spectrum_type == 'transit':
     models = glob.glob(SMART_OUTPUTS+ 'trappist1_t1e_mixed_oxygen_0_*_6666_250000cm.trnst')
     o2val_ind = -3
 
+
+
 wl = observation.lam
+
+newrange = (wl > 0.4)
+
+wl = wl[newrange]
+observation_flux = observation_flux[newrange]
 
 
 
@@ -37,7 +44,7 @@ for model_fl in models:
     elif spectrum_type == 'transit':
         model = smart.readsmart.Trnst(model_fl)
         model_flux = model.absrad
-    assert np.array_equal(model.lam, wl)
+    model_flux = model_flux[new_range]
     chisq = calculate_chisq(observation_flux, model_flux)
     chisqs.append(chisq)
 
