@@ -2,6 +2,9 @@ import numpy as np
 import smart
 import project_tools
 import glob
+import coronagraph
+
+
 spectrum_type = 'transit'
 SMART_OUTPUTS = '../data/smart_outputs/'
 PT_DIR = '../data/pt_fls/'
