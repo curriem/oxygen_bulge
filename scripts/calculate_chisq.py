@@ -44,7 +44,7 @@ for model_fl in models:
     elif spectrum_type == 'transit':
         model = smart.readsmart.Trnst(model_fl)
         model_flux = model.absrad
-    model_flux = model_flux[new_range]
+    model_flux = model_flux[newrange]
     chisq = calculate_chisq(observation_flux, model_flux)
     chisqs.append(chisq)
 
