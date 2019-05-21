@@ -21,7 +21,10 @@ new = glob.glob('../data/pt_fls/*_09*') +  glob.glob('../data/pt_fls/*_1*')
 
 pt_files_master = [pt_files9, pt_files8, pt_files7, pt_files6]#, pt_files5, pt_files6]
 
-for n in range(4):
+pt_fls = glob.glob('../data/pt_fls/*_00*')
+pt_files_master = [pt_fls]
+
+for n in range(1):
         pt_files = pt_files_master[n]
 	runfiles = []
 	for pt_file in pt_files:
