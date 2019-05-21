@@ -3,10 +3,10 @@ import smart
 import project_tools
 import glob
 import sys
-import coronagraph as cg
 
 R = 100000
 if R != 100000:
+    import coronagraph as cg
     coro = True
 else:
     coro = False
