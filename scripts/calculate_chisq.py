@@ -2,6 +2,7 @@ import numpy as np
 import smart
 import project_tools
 import glob
+import sys
 import coronagraph as cg
 
 R = 100000
@@ -11,7 +12,7 @@ else:
     coro = False
 
 
-spectrum_type = 'transit'
+spectrum_type = sys.argv[1]
 
 SMART_OUTPUTS = '../data/smart_outputs/'
 PT_DIR = '../data/pt_fls/'
