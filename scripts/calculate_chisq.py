@@ -4,7 +4,7 @@ import project_tools
 import glob
 import sys
 
-R = 100000
+R = 150
 if R != 100000:
     import coronagraph as cg
     coro = True
@@ -22,7 +22,7 @@ def calculate_chisq(observation, model):
 
 def reduce_R(old_wl, old_flux):
     new_wl, dlam = cg.noise_routines.construct_lam(np.min(old_wl), np.max(old_wl), Res=R)
-    new_flux = cg.downbin_spec(old_flux, new_wl, old_wl, dlam=dlam)
+    new_flux = cg.downbin_spec(old_flux, old_wl, new_wl, dlam=dlam)
     return new_wl, new_flux
 
 if spectrum_type == 'direct':
@@ -47,7 +47,7 @@ wl = wl[newrange]
 observation_flux = observation_flux[newrange]
 
 if coro:
-    wl, observaition_flux = reduce_R(wl, observation_flux)
+    wl, observation_flux = reduce_R(wl, observation_flux)
 
 metadata_full = []
 metadata_bands = []
@@ -65,6 +65,8 @@ for model_fl in models:
     if coro:
         model_wl, model_flux = reduce_R(model_wl, model_flux)
 
+    print model_flux.shape
+    print observation_flux.shape
     chisq = calculate_chisq(observation_flux, model_flux)
     o2_val = '0.' + model_fl.split('_')[o2val_ind]
     o2_val = float(o2_val)
