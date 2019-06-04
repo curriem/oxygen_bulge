@@ -292,8 +292,7 @@ def run_sun(ptfile, band, wlrange, place='output', R=100000., rm_when_done=False
 
         return
 
-def make_atmosphere(o2_loc, o2_mixing_ratio):
-    COLD_TRAP = 0.1
+def make_atmosphere(o2_loc, o2_mixing_ratio, cold_trap=0.1):
 
     ref_pt = PT_DIR + '/earth_standard_icrccm_vmix.pt'
 
@@ -317,15 +316,15 @@ def make_atmosphere(o2_loc, o2_mixing_ratio):
 
     if o2_loc == 'upper':
         new_o2 = np.ones_like(ref_o2)
-        new_o2[ref_p > COLD_TRAP] = 0
-        new_o2[ref_p <= COLD_TRAP] = o2_mixing_ratio
+        new_o2[ref_p > cold_trap] = 0
+        new_o2[ref_p <= cold_trap] = o2_mixing_ratio
 
     elif o2_loc == 'mixed':
         new_o2 = o2_mixing_ratio * np.ones_like(ref_o2)
 
     new_pt_data[:, 8] = new_o2
 
-    new_pt_fl_name = o2_loc + '_oxygen_' + str(o2_mixing_ratio).replace('.', '_') + '.pt'
+    new_pt_fl_name = o2_loc + '_oxygen_' + str(o2_mixing_ratio).replace('.', '_') + '_trop_' + str(cold_trap).replace('.', '_') + '.pt'
 
     np.savetxt(PT_DIR+new_pt_fl_name, new_pt_data, delimiter='   ', header=header, comments='')
 
